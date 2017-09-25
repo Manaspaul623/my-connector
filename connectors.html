@@ -1,0 +1,598 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Cloud Connector for BigCommerce and Magento. Connect to Salesforce, Zoho CRM & VTiger CRM"/>
+    <link rel="shortcut icon" type="image/png" href="images/fav.png"/>
+    <link rel="canonical" href="www.aquaapi.io/BigCommerceCRMConnector.html"/>
+    <title>AquaAPI :: Cloud Connector for BigCommerce and Magento</title>
+    <link rel="stylesheet" type="text/css" href="css/foundation.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/app.css"/>
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
+    <link rel="stylesheet" type="text/css" href="css/style2.css">
+    <style>
+        @media screen and (max-width: 767px) {
+            .table-responsive {
+                width: 100%;
+                margin-bottom: 15px;
+                overflow-y: hidden;
+                -ms-overflow-style: -ms-autohiding-scrollbar;
+                border: 1px solid #ddd;
+            }
+            .table-responsive > .table {
+                margin-bottom: 0;
+            }
+            .table-responsive > .table > thead > tr > th,
+            .table-responsive > .table > tbody > tr > th,
+            .table-responsive > .table > tfoot > tr > th,
+            .table-responsive > .table > thead > tr > td,
+            .table-responsive > .table > tbody > tr > td,
+            .table-responsive > .table > tfoot > tr > td {
+                white-space: nowrap;
+            }
+            .table-responsive > .table-bordered {
+                border: 0;
+            }
+            .table-responsive > .table-bordered > thead > tr > th:first-child,
+            .table-responsive > .table-bordered > tbody > tr > th:first-child,
+            .table-responsive > .table-bordered > tfoot > tr > th:first-child,
+            .table-responsive > .table-bordered > thead > tr > td:first-child,
+            .table-responsive > .table-bordered > tbody > tr > td:first-child,
+            .table-responsive > .table-bordered > tfoot > tr > td:first-child {
+                border-left: 0;
+            }
+            .table-responsive > .table-bordered > thead > tr > th:last-child,
+            .table-responsive > .table-bordered > tbody > tr > th:last-child,
+            .table-responsive > .table-bordered > tfoot > tr > th:last-child,
+            .table-responsive > .table-bordered > thead > tr > td:last-child,
+            .table-responsive > .table-bordered > tbody > tr > td:last-child,
+            .table-responsive > .table-bordered > tfoot > tr > td:last-child {
+                border-right: 0;
+            }
+            .table-responsive > .table-bordered > tbody > tr:last-child > th,
+            .table-responsive > .table-bordered > tfoot > tr:last-child > th,
+            .table-responsive > .table-bordered > tbody > tr:last-child > td,
+            .table-responsive > .table-bordered > tfoot > tr:last-child > td {
+                border-bottom: 0;
+            }
+        }
+        #connector_table td {
+            width: 25%;
+            text-align: center;
+        }
+        .img{
+        	background-color: #3f688e;
+            font-size: 15px !important;
+            padding: 15px 26px !important;
+        }
+
+      #con_table{
+          width: 100%;
+          color: black;
+          font-size: large;
+
+      }
+    </style>
+</head>
+<body>
+<section class="cd-content">
+    <div class="service-page subpage">
+        <header class="sub_header row">
+            <div class="small-5 medium-4 columns">
+                <a class="logo" href="index.html"><img src="images/logo-sml.png"/></a>
+            </div>
+            <div class="small-7 medium-8 columns text-right">
+                <span class="title"><a href="connectors.html">eCommerce Platform Cloud Connector</a></span>
+            </div>
+        </header>
+
+        <div class="software">
+            <div class="first-impression text-center">
+                <div class="row column">
+                    <div class="subhed-box">
+                        <h3 class="productHeader">Sync Your eCommerce Platform with Other Cloud Apps</h3>
+                    </div>
+                    <div class="full-screen">
+                        <!-- <h1>Instantly connect BigCommerce or Magento</h1><br>
+                        <h1>with</h1><br>
+                        <h1>Salesforce, Zoho CRM or vTiger CRM</h1>
+                        <p class="special-p">Subscription Service. Free Trial. Upgrade, Downgrade or Cancel Anytime.</p>
+                        <p class="special-p">Sync every hour.</p>
+                        <a href="https://apps.bigcommerce.com/details/7327">Get Started</a> -->
+                        <a href="/app/install/login.php">Get Started</a>
+
+                        <!-- <div class="graphics">
+                             <img src="images/software/macbookpro.png" alt="screen"> -->
+                    </div>
+                    <div class="row descriptions">
+                        <div class="small-12 medium-4 columns no-one">
+                            <img src="images/software/chat.png">
+                            <h4>Sync every 30 mins.</h4>
+                            <p>All new Orders, Accounts, Contacts and Products are automaticlly synced every 30 mins. On-demand sync also available.</p>
+                        </div>
+                        <div class="small-12 medium-4 columns no-two">
+                            <img src="images/software/cloud.png">
+                            <h4>Cloud Subscription Service</h4>
+                            <p>No software installation involved. Start Instantaneously.</p>
+                        </div>
+                        <div class="small-12 medium-4 columns no-three">
+                            <img src="images/software/desktop.png">
+                            <h4>Supports Custom Workflows</h4>
+                            <p>We also design and host custom connector workflows for a small fee.</p>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="software" style="background-color: #3f688e;">
+            <div class="first-impression text-center">
+                <div class="row column">
+                    <div class="subhed-box">
+                        <h3 class="productHeader">Our Connectors</h3>
+                    </div>
+                    <div class="row descriptions">
+                        <table class="table-responsive" id="connector_table">
+                            <thead>
+                            <tr>
+                                <td>Ecommerce Platform</td>
+                                <td></td>
+                                <td>Target Apps</td>
+                                <td>Try Now</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/BigCommerce-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img id="img" src="images/icons/logo-zoho-crm.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a> <a href="#" id="B2Z" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/BigCommerce-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/sfdc.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" id="B2S" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/BigCommerce-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/zoho-inventory.jpg" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" id="B2ZI" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/BigCommerce-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/HubSpot_Logo.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" id="B2H" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/BigCommerce-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/Vtiger.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <img src="images/icons/magento.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img id="img" src="images/icons/logo-zoho-crm.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/magento.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/sfdc.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/magento.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/zoho-inventory.jpg" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/magento.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/HubSpot_Logo.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/magento.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/Vtiger.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <img src="images/icons/shopify-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img id="img" src="images/icons/logo-zoho-crm.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/shopify-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/sfdc.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/shopify-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/zoho-inventory.jpg" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/shopify-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/HubSpot_Logo.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <img src="images/icons/shopify-logo.png" width="50%">
+                                </td>
+                                <td>
+                                    <i class="fa fa-arrow-right fa-3x" aria-hidden="true" style="color: #1e6eff;"></i>
+                                </td>
+                                <td>
+                                    <img src="images/icons/Vtiger.png" width="60%">
+                                </td>
+                                <td>
+                                    <a href="/app/install/login.php" class="img">Try Now</a><a href="#" class="img">+ Details</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- BigCommere To Zoho CRM -->
+                        <div id="B2Z_modal" class="modal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="closeBtn">&times;</span>
+                                    <h4>Bigcommerce To Zoho CRM Connector</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table-responsive" id="con_table">
+                                        <thead>
+
+                                        <tr>
+                                           <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        <tr>
+                                        <td>Workflows</td>
+                                        <td>Pricing</td>
+
+                                        </tr>
+                                        </tbody>
+
+
+
+                                    </table>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <h4>Try Now</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- BigCommere To SFDC CRM -->
+                        <div id="B2S_modal" class="modal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="closeBtn">&times;</span>
+                                    <h4>Bigcommerce To SFDC CRM Connector</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table-responsive" id="con_table">
+                                        <thead>
+
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+
+                                        </tr>
+                                        </tbody>
+
+
+
+                                    </table>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <h4>Try Now</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- BigCommere To Zoho Inventory CRM -->
+                        <div id="B2ZI_modal" class="modal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="closeBtn">&times;</span>
+                                    <h4>Bigcommerce To Zoho Inventory Connector</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table-responsive" id="con_table">
+                                        <thead>
+
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td rowspan="4">Workflows</td>
+                                            <td rowspan="4">Pricing</td>
+                                        </tr>
+
+                                        </tbody>
+
+
+
+                                    </table>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <h4>Try Now</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- BigCommere To Zoho Inventory CRM -->
+                        <div id="B2H_modal" class="modal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <span class="closeBtn">&times;</span>
+                                    <h4>Bigcommerce To Zoho Inventory Connector</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table-responsive" id="con_table">
+                                        <thead>
+
+                                        <tr>
+                                            <td>Workflows</td>
+                                            <td>Pricing</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td rowspan="4">Workflows</td>
+                                            <td rowspan="4">Pricing</td>
+                                        </tr>
+
+                                        </tbody>
+
+
+
+                                    </table>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <h4>Try Now</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <footer data-include="footer"></footer>
+</section>
+<div class="cd-overlay-nav">
+    <span></span>
+</div> <!-- cd-overlay-nav -->
+
+<div class="cd-overlay-content">
+    <span></span>
+</div> <!-- cd-overlay-content -->
+
+<a href="#0" class="cd-nav-trigger">Menu<span class="cd-icon"></span></a>
+
+<nav>
+    <ul class="cd-primary-nav">
+        <li class="logoli"><img src="images/logo.png"></li>
+        <li><a href='index.html'><img src="images/home.png"> Home</a></li>
+        <li class='active'><a href='expertise.html'><img src="images/work.png">Expertise</a></li>
+        <li class='active'><a href='connectors.html'><img src="images/gear.png">Connectors</a></li>
+        <li class='active'><a href='mobileApps.html'><img src="images/product.png">Mobile Apps</a></li>
+        <li class='active'><a href='customWork.html'><img src="images/case-study.png">Custom Work</a></li>
+        <li class='active'><a href='contact.html'><img src="images/contact.png"> Contact</a></li>
+    </ul>
+</nav>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="js/slick.min.js"></script>
+<script src="js/velocity.min.js"></script>
+<script src="js/app.js"></script>
+<script>
+    $(document).ready(function () {
+        var includes = $('[data-include]');
+        jQuery.each(includes, function () {
+            var file = $(this).data('include') + '.html';
+            $(this).load(file);
+        });
+    });
+
+</script>
+<script>
+    $('#B2Z').click(function () {
+        // Get modal element
+        $('#B2Z_modal').css('display','block');
+
+    });
+
+    $('#B2S').click(function () {
+        // Get modal element
+        $('#B2S_modal').css('display','block');
+
+    });
+
+    $('#B2ZI').click(function () {
+        // Get modal element
+        $('#B2ZI_modal').css('display','block');
+
+    });
+
+    $('#B2H').click(function () {
+        // Get modal element
+        $('#B2H_modal').css('display','block');
+
+    });
+
+    $('.closeBtn').click(function () {
+        $('.modal').css('display','none');
+    })
+
+</script>
+<script src="js/page_analytics.js"></script>
+</body>
+</html>

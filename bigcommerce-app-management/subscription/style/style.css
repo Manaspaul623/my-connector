@@ -1,0 +1,176 @@
+@charset "utf-8";
+/* CSS Document */
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700); /*font-family: 'Open Sans Condensed', sans-serif;*/
+body{
+	margin:0;
+	padding:0;
+	font-family: 'Open Sans', sans-serif;
+}
+
+.main_wrapper{
+	background:#384556;
+	min-height:100%;
+}
+
+.text-center{
+	text-align: center;
+}
+
+/*---- button ----*/
+.primary-btn{
+	border: none;
+    background: #4ab34a;
+    padding: 10px 50px;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: 400;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+.primary-btn:hover{
+    color: #fff;
+	background:#3fa13f;
+}
+.logo{
+	padding:50px 0 0;
+}
+
+.headlign{
+	font-family: 'Open Sans Condensed', sans-serif;
+	color:#fff;
+	font-size:2em;
+}
+.cnterBox{
+	display: inline-block;
+	xmargin-top:100px;
+}
+.cnterBox .box{
+	border-radius: 5px;
+	background: rgba(255, 255, 255, 07);
+	padding: 25px;
+	text-align: left;
+	color:#000;
+	min-width:300px;
+}
+.box label{
+	display:block;
+}
+.box select{
+	display:block;
+	width: 100%;
+}
+.box select{
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 5px;
+    margin: 10px 0;
+}
+.box input{
+	display:block;
+	width:100%;
+	padding:10px;
+	margin:10px 0;
+	border-radius: 5px;
+	border: 1px solid rgba(0, 0, 0, .2);
+}
+.cnterBox table{
+	border-collapse: collapse;
+	margin-bottom: 15px;
+	text-align: left;
+	border-radius: 5px;
+}
+.cnterBox table td{
+	padding: 5px 15px;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.cnterBox table th{
+	border: none;
+}
+
+h1{
+	border: none;
+	color: #fff;
+	font-size: 20px;
+	font-weight: 400;
+	padding: 5px 0;
+	margin: 0 0 5px
+}
+.successimg{
+	margin:100px 0 15px;
+}
+.successp {
+    margin: 0;
+    color: #6cc032;
+    font-size: 14px;
+}
+/*---- plan ----*/
+.planwrp {
+    margin-top: 50px;
+}
+.planwrp .box{
+	min-width:960px;
+	max-width: 960px;
+	overflow:hidden;
+	padding:24px 0;
+}
+
+.planbox{
+	float:left;
+	width:30%;
+	position:relative;
+	padding:0 15px;
+	border-right:1px solid rgba(0, 0, 0, 0.19);
+}
+.planbox > span{
+	font-weight:400;
+	font-size:20px;
+}
+.planbox > a{
+    position: absolute;
+    top: 0;
+    right: 15px;
+    text-decoration: none;
+    background:#6CB46B;
+    color: #fff;
+    font-size: 14px;
+    padding: 5px 15px;
+    border-radius: 5px;
+}
+.planbox table{
+	width:100%;
+	margin-top:15px;
+}
+.planbox table tr td:first-child{
+	width:80px;
+}
+
+
+/*----- vertical align -----*/
+.parentwrapper {
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  height: 100%;
+}
+
+.childwrapper {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+/*---- install screen ----*/
+.installscreen .logo{
+	padding:0;
+}
+.installscreen .childwrapper{
+	display: inline-block;
+    margin: auto;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    padding: 25px 15px;
+}

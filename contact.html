@@ -1,0 +1,229 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Contact Us"/>
+    <link rel="shortcut icon" type="image/png" href="images/fav.png"/>
+	<link rel="canonical" href="www.aquaapi.io/Contact.html"/>
+    <title>AquaAPI :: Contact</title>
+    <link rel="stylesheet" type="text/css" href="css/foundation.min.css">
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" type="text/css" href="css/menu.css">
+    
+  </head>
+  <body class="home">
+<section class="cd-content"> 
+      <div class="contact-page subpage page-wrap">
+           <header class="sub_header row">
+           	<div class="small-6 columns">
+            	<a class="logo" href="index.html"><img src="images/logo-sml.png"/></a>
+            </div>
+            <div class="small-6 columns text-right">
+            	<span class="title">contact us</span>
+            </div>
+           </header>
+            
+          <div class="list-view pad">
+            <div class="row column wrapper">
+            	 <div class="row addressform">      		
+                  <div class="small-12 medium-7 medium-push-5 columns large-pad">
+                  	<div class="row">
+                    	<div class="small-12 medium-5 columns">
+                        <h3>USA Office</h3>
+                        <address>aquaAPI LLC<br/>
+                        340 S Lemon Ave #1161<br/>
+                        WALNUT, CA 91789
+                        </address>
+                    	</div>
+                      <div class="small-12 medium-7 columns pad-top">
+                        
+                        <div class="ml">
+                        <img src="images/mail.png">
+                         <a class="mail" href="mailto:sales@aquaapi.com" target="_top">sales@aquaapi.com</a>
+                        </div>
+                        
+                        <div class="ph">
+                        <img src="images/phone.png">
+                         (408) 884-5842
+                        </div>
+                    	</div>
+                    </div>
+                    <div class="row pad-top2">
+                    	<div class="small-12 medium-5 columns">
+                        <h3>India Office</h3>
+                        <address>MASTISKA<br>
+                        3/A Janak Road,<br>
+                        Kolkata 700 029, India
+                        </address>
+                    	</div>
+                    </div>
+                    
+                    
+               		</div>
+                  <div class="small-12 medium-5 medium-pull-7 columns">
+                  	<h3 style="margin-bottom:0;">For Inquiry</h3>
+                    <form id="form_submit">
+                    <section class="content">
+                      <span class="input input--hoshi">
+                        <input class="input__field input__field--hoshi" type="text" id='name' name='name'/>
+                        <label class="input__label input__label--hoshi input__label--hoshi-color-1" for="input-4">
+                          <span class="input__label-content input__label-content--hoshi">Name*</span>
+                        </label>
+                      </span>
+                      
+                      <span class="input input--hoshi">
+                        <input class="input__field input__field--hoshi" type="email" id='email' name='email'/>
+                        <label class="input__label input__label--hoshi input__label--hoshi-color-1" for="input-4">
+                          <span class="input__label-content input__label-content--hoshi">Email*</span>
+                        </label>
+                      </span>
+                    </section>
+                    	
+                      <label class="text-left" style="margin-top:30px;">Message
+                          <textarea style="min-height:100px;" id="message" name="message"></textarea>
+                      </label>
+                      <input class="snd" id="contactSubmit" value="Send" type="submit">
+                    </form>
+               		</div>
+               </div>
+              </div>
+          </div>  
+      </div>
+
+    <footer data-include="footer"></footer>
+</section>    
+<div class="cd-overlay-nav">
+	<span></span>
+</div> <!-- cd-overlay-nav -->
+
+<div class="cd-overlay-content">
+	<span></span>
+</div> <!-- cd-overlay-content -->
+
+<a href="#0" class="cd-nav-trigger">Menu<span class="cd-icon"></span></a>
+
+<nav>
+    <ul class="cd-primary-nav">
+		<li class="logoli"><img src="images/logo.png"></li>
+        <li><a href='index.html'><img src="images/home.png"> Home</a></li>
+        <li class='active'><a href='expertise.html'><img src="images/work.png">Expertise</a></li>
+        <li class='active'><a href='connectors.html'><img src="images/gear.png">Connectors</a></li>
+        <li class='active'><a href='mobileApps.html'><img src="images/product.png">Mobile Apps</a></li>
+		<li class='active'><a href='customWork.html'><img src="images/case-study.png">Custom Work</a></li>
+        <li class='active'><a href='contact.html'><img src="images/contact.png"> Contact</a></li>
+    </ul>
+</nav>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="js/slick.min.js"></script>
+    <script src="js/velocity.min.js"></script>
+    <script src="js/classie.js"></script>
+<script>
+    $(document).ready(function (){
+        var includes = $('[data-include]');
+        jQuery.each(includes, function () {
+            var file = $(this).data('include') + '.html';
+            $(this).load(file);
+        });
+    });
+
+</script>
+    <script>
+			(function() {
+				// trim polyfill : https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim
+				if (!String.prototype.trim) {
+					(function() {
+						// Make sure we trim BOM and NBSP
+						var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+						String.prototype.trim = function() {
+							return this.replace(rtrim, '');
+						};
+					})();
+				}
+
+				[].slice.call( document.querySelectorAll( 'input.input__field' ) ).forEach( function( inputEl ) {
+					// in case the input is already filled..
+					if( inputEl.value.trim() !== '' ) {
+						classie.add( inputEl.parentNode, 'input--filled' );
+					}
+
+					// events:
+					inputEl.addEventListener( 'focus', onInputFocus );
+					inputEl.addEventListener( 'blur', onInputBlur );
+				} );
+
+				function onInputFocus( ev ) {
+					classie.add( ev.target.parentNode, 'input--filled' );
+				}
+
+				function onInputBlur( ev ) {
+					if( ev.target.value.trim() === '' ) {
+						classie.remove( ev.target.parentNode, 'input--filled' );
+					}
+				}
+			})();
+		</script>
+    <script src="js/app.js"></script>
+
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $('body').on('click', '#contactSubmit', function () {
+                    $("#form_submit").validate({
+                        submitHandler: function (form) {
+                            var name = $('#name').val();
+                            var email = $('#email').val();
+                            var message = $('#message').val();
+
+                            $.ajax({
+                                type: 'POST',
+                                url: 'http://www.aquaapi.com/backend/mail_test.php',
+                                crossDomain: true,
+                                data: $.param({
+                                    'name': name,
+                                    'user_email': email,
+                                    'message': message
+                                }),
+                                dataType: 'json',
+                                success: function (responseData, textStatus, jqXHR) {
+								//console.log(responseData);
+                                    if(responseData.flag){
+                                        $('#sendStatus').text("Thank you for contacting us.").addClass("success");
+																				$('#name').val('');
+																				$('#email').val('');
+																				$('#message').val('');
+                                    }else{
+                                        $('#sendStatus').text("Something went wrong,Please try again.").addClass("error");
+                                    }
+                                },
+                                error: function (responseData, textStatus, errorThrown) {
+								//console.log(responseData);
+                                    $('#sendStatus').text("Something went wrong,Please try again.").addClass("error");
+                                }
+                            });
+                        },
+                        rules: {
+                            name: {
+                                required: true,
+                                maxlength: 150
+                            },
+                            email: {
+                                required: true,
+                                email: true,
+                                maxlength: 150
+                            },
+                            message: {
+                                required: true
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+
+<script src="js/page_analytics.js"></script>
+  </body>
+</html>
