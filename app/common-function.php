@@ -5682,7 +5682,7 @@ function bigcommerceToHubspotCRM($credentials)
     return $flagOrder;
 } //Done
 
-// Core Function For Shopify Sync....
+// Core Function For Shopify Sync From Aquaapi App....
 function shopifyToHubspotCRM($credentials)
 {
 
@@ -6619,9 +6619,6 @@ function shopifyToZohoInventoryCRM($credentials)
         curl_close($ch);
         if ($http_code === 200) {
             $orders = json_decode($return, TRUE);
-
-            print_r($orders);
-            exit(1);
 
             $count = count($orders);
             if ($count > 0) {
@@ -8374,6 +8371,501 @@ function shopifyToSfdcCRM($credentials)
     return $flagOrder;
 } //Done
 
+// Core Function For Shopify Sync From Shopify App....
+function shopifyappToSfdcCRM($credentials)
+{
+    $flagCustomer = 0;
+    $flagProduct = 0;
+    $flagOrder = 0;
+
+    $subscriptionId = $credentials['subscription_id'];
+    $crmType = 'shopifyTosfdc';//$credentials['crm_type'];
+    $contextVal = //$credentials['contextValue'];
+
+    $shopifyURL = $credentials['app1Details']['shopify_url'];
+    $shopifyToken = $credentials['app1Details']['shopify_token'];
+
+    $min_date_created = $credentials['min_date_created'];
+    $max_date_created = $credentials['max_date_created'];
+
+    $sfdcCredentials = $credentials['app2Details'];
+    $priceBookInfo = Sfdc::getPriceBookDetails($sfdcCredentials);
+    $credentials['stdPriceBookId'] = $priceBookInfo->Id;
+    $cloudApp = 'SFDC';
+    //........... Get HubSpot access token if already Access Permission Given.......
+
+    try {
+        //............ORDER LIST COLLECTIONG.................
+
+        $orderUrl = $shopifyURL . "/admin/orders.json?created_at_min=" . $min_date_created . "&created_at_max=" . $max_date_created . "&direction=asc";
+        $http_headres = array(
+            "X-Shopify-Access-Token: ".trim($shopifyToken)
+        );
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $orderUrl);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headres);
+        $return = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($http_code === 200) {
+            $orders = json_decode($return, TRUE);
+            $count = count($orders);
+
+            print_r($orders);
+            exit(1);
+
+            if ($count > 0) {
+
+                foreach ($orders as $num => $getOrders) {
+
+                    foreach ($getOrders as $key => $value) {
+
+                        //Customer Detials Collect
+                        if (!empty($value['customer'])) {
+                            $customerId = $value['customer']['id'];
+                            $accountQuery = "Select Id, Name FROM Account WHERE AccountNumber = '$customerId'";
+                        } else {
+                            $phoneNo = $value['phone'];
+                            $accountQuery = "Select Id, Name FROM Account WHERE Phone = '$phoneNo'";
+                        }
+                        $currencyExchangeRate = $value['currency'];
+                        $discountAmount = $value['total_discounts'];
+                        $email = $value['email'];
+                        $phone = $value['phone'];
+                        $orderId = $value['order_number'];
+                        $subject = 'Order Number ' . $orderId;
+
+                        //Status of Order./................
+                        $currentOrderStatus = $value['financial_status'];
+                        //Status of Order./................
+
+                        $sfdcQuery = "Select Id FROM Order WHERE OrderReferenceNumber = '$orderId'";
+                        $queryResult = Sfdc::sfdcFindRecord($sfdcCredentials, $sfdcQuery);
+
+                        if ($queryResult->size === 0) // order doesn't exist
+                        {
+
+
+                            // Search for existing Account
+
+                            $sfdcQuery = $accountQuery;
+                            $queryResult = Sfdc::sfdcFindRecord($sfdcCredentials, $sfdcQuery);
+                            if ($queryResult->size === 0) // no existing Account
+                            {
+                                $accounts = array();
+                                $accounts[0] = new stdclass();
+                                if (!empty($value['shipping_address'])) {
+                                    $firstName = $value['shipping_address']['first_name'];
+                                    $lastName = $value['shipping_address']['last_name'];
+                                    if ($value['shipping_address']['company'] !== null) {
+                                        $accountName = $value['shipping_address']['company'];
+                                    } else {
+                                        $accountName = $firstName . ' ' . $lastName;
+                                    }
+                                    $phone = $value['shipping_address']['phone'];
+
+                                    $mailingStreet = $value['shipping_address']['address1'] . "," . $value['shipping_address']['address2'];
+                                    $otherStreet = $value['shipping_address']['address1'] . "," . $value['shipping_address']['address2'];
+                                    $mailingCity = $value['shipping_address']['city'];
+                                    $otherCity = $value['shipping_address']['city'];
+                                    $mailingState = $value['shipping_address']['province'];
+                                    $otherState = $value['shipping_address']['province'];
+                                    $mailingZip = $value['shipping_address']['zip'];
+                                    $otherZip = $value['shipping_address']['zip'];
+                                    $mailingCountry = $value['shipping_address']['country'];
+                                    $otherCountry = $value['shipping_address']['country'];
+
+                                    $accounts[0]->BillingCity = $mailingCity;
+                                    $accounts[0]->BillingCountry = $mailingCountry;
+                                    $accounts[0]->BillingPostalCode = $mailingZip;
+                                    $accounts[0]->BillingState = $mailingState;
+                                    $accounts[0]->BillingStreet = $mailingStreet;
+                                    $accounts[0]->ShippingCity = $otherCity;
+                                    $accounts[0]->ShippingCountry = $otherCountry;
+                                    $accounts[0]->ShippingPostalCode = $otherZip;
+                                    $accounts[0]->ShippingState = $otherState;
+                                    $accounts[0]->ShippingStreet = $otherStreet;
+                                }
+                                else if (!empty($value['billing_address'])) {
+                                    $firstName = $value['billing_address']['first_name'];
+                                    $lastName = $value['billing_address']['last_name'];
+                                    if ($value['shipping_address']['company'] !== null) {
+                                        $accountName = $value['shipping_address']['company'];
+                                    } else {
+                                        $accountName = $firstName . ' ' . $lastName;
+                                    }
+                                    $phone = $value['billing_address']['phone'];
+
+                                    $mailingStreet = $value['billing_address']['address1'] . "," . $value['billing_address']['address2'];
+                                    $otherStreet = $value['billing_address']['address1'] . "," . $value['billing_address']['address2'];
+                                    $mailingCity = $value['billing_address']['city'];
+                                    $otherCity = $value['billing_address']['city'];
+                                    $mailingState = $value['billing_address']['province'];
+                                    $otherState = $value['billing_address']['province'];
+                                    $mailingZip = $value['billing_address']['zip'];
+                                    $otherZip = $value['billing_address']['zip'];
+                                    $mailingCountry = $value['billing_address']['country'];
+                                    $otherCountry = $value['billing_address']['country'];
+
+                                    $accounts[0]->BillingCity = $mailingCity;
+                                    $accounts[0]->BillingCountry = $mailingCountry;
+                                    $accounts[0]->BillingPostalCode = $mailingZip;
+                                    $accounts[0]->BillingState = $mailingState;
+                                    $accounts[0]->BillingStreet = $mailingStreet;
+                                    $accounts[0]->ShippingCity = $otherCity;
+                                    $accounts[0]->ShippingCountry = $otherCountry;
+                                    $accounts[0]->ShippingPostalCode = $otherZip;
+                                    $accounts[0]->ShippingState = $otherState;
+                                    $accounts[0]->ShippingStreet = $otherStreet;
+                                }
+                                else {
+                                    $firstName = $value['customer']['first_name'];
+                                    $lastName = $value['customer']['last_name'];
+                                    if ($value['customer']['default_address']['company'] !== null) {
+                                        $accountName = $value['customer']['default_address']['company'];
+                                    } else {
+                                        $accountName = $firstName . ' ' . $lastName;
+                                    }
+                                    $email = $value['email'];
+                                    $phone = $value['customer']['phone'];
+
+                                    $mailingStreet = $value['customer']['default_address']['address1'] . "," . $value['customer']['default_address']['address2'];
+                                    $otherStreet = $value['customer']['default_address']['address1'] . "," . $value['customer']['default_address']['address2'];
+                                    $mailingCity = $value['customer']['default_address']['city'];
+                                    $otherCity = $value['customer']['default_address']['city'];
+                                    $mailingState = $value['customer']['default_address']['province'];
+                                    $otherState = $value['customer']['default_address']['province'];
+                                    $mailingZip = $value['customer']['default_address']['zip'];
+                                    $otherZip = $value['customer']['default_address']['zip'];
+                                    $mailingCountry = $value['customer']['default_address']['country'];
+                                    $otherCountry = $value['customer']['default_address']['country'];
+
+                                    $accounts[0]->BillingCity = $mailingCity;
+                                    $accounts[0]->BillingCountry = $mailingCountry;
+                                    $accounts[0]->BillingPostalCode = $mailingZip;
+                                    $accounts[0]->BillingState = $mailingState;
+                                    $accounts[0]->BillingStreet = $mailingStreet;
+                                    $accounts[0]->ShippingCity = $otherCity;
+                                    $accounts[0]->ShippingCountry = $otherCountry;
+                                    $accounts[0]->ShippingPostalCode = $otherZip;
+                                    $accounts[0]->ShippingState = $otherState;
+                                    $accounts[0]->ShippingStreet = $otherStreet;
+                                }
+
+                                /* Insert new Account in sfdc */
+                                $accounts[0]->Name = $accountName;
+                                $accounts[0]->AccountNumber = $customerId;
+
+                                // $accounts[0]->Email = $customerDetails['email'];
+                                $accounts[0]->Phone = $phone;
+                                $createAccountRes = Sfdc::createSfdcAccount($sfdcCredentials, $accounts);
+                                $oldAccount = new stdclass();
+
+                                $accountId = $createAccountRes->id;
+                                $resCode = $createAccountRes->success;
+                                if ($resCode == 0) // error in inserting Account
+                                {
+                                    $createAccountError = $createAccountRes->errors[0]->duplicateResult->matchResults[0]->matchRecords[0]->record->Id;
+                                    // check, if duplicate exists.
+
+                                    if ($createAccountRes->errors[0]->statusCode === 'DUPLICATES_DETECTED') {
+                                        //update records
+                                        $oldAccount->Id = $createAccountError;
+                                        $accounts[0]->Id = $oldAccount->Id; /*
+											$SfdcWsdl = "/var/www/html/bigcommerce-app-management/sfdc-integration/sfdc/enterprise.wsdl.xml";
+                                                        				$SfdcUsername = $sfdcCredentials['sfdc_user_name'];
+                                                        				$SfdcPassword = $sfdcCredentials['sfdc_password'];
+                                                        				$SfdcSecurityToken = $sfdcCredentials['sfdc_security_password'];
+                                                        				$mySforceConnection = new SforceEnterpriseClient();
+                                                        				$mySforceConnection->createConnection($SfdcWsdl);
+                                                        				$mySforceConnection->login($SfdcUsername, $SfdcPassword . $SfdcSecurityToken);
+                                                        				$response = $mySforceConnection->update(array($oldAccount,$accounts[0]), 'Account');
+											*/
+                                        $response = Sfdc::updateSfdcAccount($sfdcCredentials, $accounts);
+                                    }
+                                    $st = 'YES';
+                                    $AccountHead = 'ACCOUNT';
+                                    // SaveErrorDetails fails when $prodName has special characters used in MySQL
+                                    SaveErrorDetails($subscriptionId, $AccountHead, 'Error adding Account ' . $customerId);
+                                }
+                                // Create Contacts
+
+                                $contacts = array();
+                                $contacts[0] = new stdclass();
+                                $contacts[0]->LastName = $lastName;
+                                $contacts[0]->FirstName = $firstName;
+                                $contacts[0]->AccountId = $accountId;
+                                $contacts[0]->Email = $email;
+                                $contacts[0]->Phone = $phone;
+                                $contacts[0]->MailingCity = $accounts[0]->BillingCity;
+                                $contacts[0]->MailingCountry = $accounts[0]->BillingCountry;
+                                $contacts[0]->MailingPostalCode = $accounts[0]->BillingPostalCode;
+                                $contacts[0]->MailingState = $accounts[0]->BillingState;
+                                $contacts[0]->MailingStreet = $accounts[0]->BillingStreet;
+                                $contacts[0]->OtherCity = $accounts[0]->ShippingStreet;
+                                $contacts[0]->OtherCountry = $accounts[0]->ShippingCountry;
+                                $contacts[0]->OtherPostalCode = $accounts[0]->ShippingPostalCode;
+                                $contacts[0]->OtherState = $accounts[0]->ShippingState;
+                                $contacts[0]->OtherStreet = $accounts[0]->ShippingStreet;
+
+
+                                $createAccountRes = Sfdc::createSfdcContact($sfdcCredentials, $contacts);
+
+                            }
+                            else // Account already exists
+                            {
+                                $accountId = $queryResult->records[0]->Id;
+                                $accountName = $queryResult->records[0]->Name;
+                                $resCode = 2; // account exists
+                            }
+
+                            if ($resCode > 0) {
+
+                                // $flag = TRUE;
+
+                                if ($resCode == 1) {
+                                    $flagCustomer++;
+                                }
+
+                                /* Insert Sales Order  */
+                                $sfdcOrders = array();
+                                $sfdcOrders[0] = new stdclass();
+
+                                // Order Details Collect
+                                $subject = 'Order Number ' . $orderId;
+                                $grandTotal = $value['total_price'];
+                                $subTotal = $value['subtotal_price'];
+                                $tax = $value['total_tax'];
+                                $adjustment = $grandTotal - $subTotal;
+
+                                //Shipping Address Detail
+                                $orderBillingStreet = $value['billing_address']['address1'] . "," . $value['billing_address']['address2'];
+                                $orderBillingCity = $value['billing_address']['city'];
+                                $orderBillingZip = $value['billing_address']['province'];
+                                $orderBillingCountry = $value['billing_address']['zip'];
+                                $orderBillingState = $value['billing_address']['country'];
+                                //Shipping Address Detail
+                                $orderShippingStreet = $value['shipping_address']['address1'] . "," . $value['shipping_address']['address2'];
+                                $orderShippingCity = $value['shipping_address']['city'];
+                                $orderShippingZip = $value['shipping_address']['province'];
+                                $orderShippingCountry = $value['shipping_address']['zip'];
+                                $orderShippingState = $value['shipping_address']['country'];
+                                //Billing Address Detial
+                                $sfdcOrders[0]->BillingStreet = $orderBillingStreet;
+                                $sfdcOrders[0]->BillingCity = $orderBillingCity;
+                                $sfdcOrders[0]->BillingState = $orderBillingState;
+                                $sfdcOrders[0]->BillingPostalCode = $orderBillingZip;
+                                $sfdcOrders[0]->BillingCountry = $orderBillingCountry;
+
+
+                                $sfdcOrders[0]->ShippingStreet = $orderShippingStreet;
+                                $sfdcOrders[0]->ShippingCity = $orderShippingCity;
+                                $sfdcOrders[0]->ShippingState = $orderShippingState;
+                                $sfdcOrders[0]->ShippingPostalCode = $orderShippingZip;
+                                $sfdcOrders[0]->ShippingCountry = $orderShippingCountry;
+
+                                // $Orders[0]->Account = $accountName;
+
+                                //$accounts[0]->AccountId = $accountId;
+                                $sfdcOrders[0]->AccountId = $accountId;
+
+                                // $sfdcOrders[0]->TotalAmount =  $orders['items'][$key]['grand_total'];;
+
+                                $sfdcOrders[0]->Description = $subject;
+                                $sfdcOrders[0]->Name = $subject;
+                                $salesOrderDate = DateTime::createFromFormat(DATE_RFC2822, $value['created_at']);
+                                $sfdcOrders[0]->EffectiveDate = date('Y-m-d', strtotime($salesOrderDate));
+                                $sfdcOrders[0]->OrderReferenceNumber = $orderId;
+                                $sfdcOrders[0]->Pricebook2Id = $credentials['stdPriceBookId'];
+                                $currentOrderStatus = $value['financial_status'];
+                                $sfdcOpportunity = array();
+                                $sfdcOpportunity[0] = new stdclass();
+                                if (($currentOrderStatus === 'complete') || ($currentOrderStatus === 'processing')) {
+                                    // $sfdcOrders[0]->StatusCode = 'Draft';
+                                    $sfdcOrders[0]->Status = 'Draft';
+                                    $sfdcOpportunity[0]->StageName = 'Closed Won';
+                                } else {
+                                    // $sfdcOrders[0]->Status = 'Activated';
+                                    // $sfdcOrders[0]->StatusCode = 'Draft';
+                                    $sfdcOrders[0]->Status = 'Draft';
+                                    $sfdcOpportunity[0]->StageName = 'Proposal';
+                                }
+
+                                // Create Opportunity fields.
+                                $sfdcOpportunity[0]->AccountId = $accountId;
+                                $sfdcOpportunity[0]->CloseDate = $sfdcOrders[0]->EffectiveDate;
+                                $sfdcOpportunity[0]->Name = $sfdcOrders[0]->Name;
+                                //$sfdcOpportunity[0]->StageName = 'Closed Won';
+                                $sfdcOpportunity[0]->Amount = $grandTotal;
+                                $sfdcOpportunity[0]->Description = $sfdcOrders[0]->Description;
+                                $sfdcOpportunity[0]->Pricebook2Id = $sfdcOrders[0]->Pricebook2Id;
+                                $opportunityDetails = Sfdc::createOpportunity($sfdcCredentials, $sfdcOpportunity);
+                                $orderDetails = Sfdc::createOrder($sfdcCredentials, $sfdcOrders);
+                                if ($orderDetails->success == TRUE) {
+                                    $flagOrder++;
+                                } else // error in inserting Order
+                                {
+                                    $st = 'YES';
+                                    $AccountHead = 'ORDER';
+                                    // SaveErrorDetails fails when $prodName has special characters used in MySQL
+                                    SaveErrorDetails($subscriptionId, $AccountHead, 'Error adding Order ' . $orderId);
+                                }
+
+                                //PRODUCT DETAILS COLLECT FROM ORDER
+                                $totalProduct = count($value['line_items']);
+                                $prodNumber = 0;
+                                $orderItem = array();
+                                $opportunityLineItem = array();
+                                for ($i = 0; $i < $totalProduct; $i++) {
+                                    //PRODUCT ID COLLECTED
+                                    $prodCode = $value['line_items'][$i]['sku'];
+                                    $productId = $value['line_items'][$i]['product_id'];
+                                    $m_quantity = $value['line_items'][$i]['quantity'];
+                                    $prodListPrice = $value['line_items'][$i]['price'];
+                                    $prodUnitPrice = $value['line_items'][$i]['price'];
+                                    $total = $value['line_items'][$i]['price'];
+
+                                    $sfdcQuery = "Select Id FROM PricebookEntry WHERE ProductCode = '$prodCode'";
+                                    $queryResult = Sfdc::sfdcFindRecord($sfdcCredentials, $sfdcQuery);
+                                    if ($queryResult->size != 0) // Product exists
+                                    {
+                                        $productPricebookEntryId = $queryResult->records[0]->Id;
+                                        // Update Product
+                                        $priceEntry = array();
+                                        $priceEntry[0] = new stdclass();
+                                        $priceEntry[0]->Id = $productPricebookEntryId;
+                                        $priceEntry[0]->IsActive = TRUE;
+                                        $priceEntry[0]->UnitPrice = $value['line_items'][$i]['price'];
+                                        $priceEntry[0]->UseStandardPrice = FALSE;
+                                        $response = Sfdc::updatePriceBook($sfdcCredentials, $priceEntry);
+                                    } else {
+
+
+                                        //$discount = $total - $totalAfterDiscount;
+                                        $discount = $value['line_items'][$i]['total_discount'];
+                                        $totalAfterDiscount = $total - $discount;
+
+                                        if ($value['line_items'][$i]['taxable'] == 1) {
+                                            $tax = $value['line_items'][$i]['tax_lines'][0]['price'];
+                                        } else {
+                                            $tax = 0;
+                                        }
+
+                                        $netTotal = $totalAfterDiscount + $tax;
+
+                                        //Product Detail Collect
+
+                                        $productUrl = $shopifyURL . "/admin/products/" . $productId . ".json";
+                                        $ch = curl_init();
+                                        curl_setopt($ch, CURLOPT_URL, $orderUrl);
+                                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                                        $return = curl_exec($ch);
+                                        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                                        curl_close($ch);
+                                        $productDetail = json_decode($return, TRUE);
+                                        //End of Product Details
+                                        //PRODUCT DETAILS IF EXISTS .................
+                                        $prodName = $value['line_items'][$i]['name'];
+                                        $stock_quantity = '100';
+                                        $price = $value['line_items'][$i]['price'];
+                                        $description = $value['line_items'][$i]['name'];
+
+                                        /* insert into products */
+                                        $products = array();
+                                        $products[0] = new stdclass();
+                                        $products[0]->Name = $prodName;
+                                        $products[0]->IsActive = TRUE;
+                                        $products[0]->ProductCode = $prodCode;
+                                        $products[0]->Description = $description; // Check description
+                                        $productRes = Sfdc::createSfdcProducts($sfdcCredentials, $products);
+                                        if ($productRes->success == TRUE) {
+                                            $flagProduct++;
+                                        } else // error in inserting Product
+                                        {
+                                            $st = 'YES';
+                                            $AccountHead = 'PRODUCT';
+                                            // SaveErrorDetails fails when $prodName has special characters used in MySQL
+                                            SaveErrorDetails($subscriptionId, $AccountHead, 'Error adding Product ' . $prodCode);
+                                        }
+
+                                        $insertedProductId = $productRes->id;
+                                        $priceEntry = array();
+                                        $priceEntry[0] = new stdclass();
+                                        $priceEntry[0]->Pricebook2Id = $credentials['stdPriceBookId'];
+                                        $priceEntry[0]->IsActive = TRUE;
+                                        $priceEntry[0]->Product2Id = $insertedProductId;
+                                        $priceEntry[0]->UnitPrice = $prodUnitPrice;
+                                        $priceEntry[0]->UseStandardPrice = FALSE;
+
+                                        $addedId = Sfdc::addToPriceBook($sfdcCredentials, $priceEntry);
+                                        $productPricebookEntryId = $addedId->id;
+                                    }
+                                    // Add Order Item
+
+                                    $orderItem[$i] = new stdclass();
+                                    $orderItem[$i]->PricebookEntryId = $productPricebookEntryId;
+                                    $orderItem[$i]->OrderId = $orderDetails->id;
+                                    $orderItem[$i]->Quantity = $m_quantity;
+                                    $orderItem[$i]->UnitPrice = $prodUnitPrice;
+
+                                    if ($opportunityDetails->success) {
+                                        // create Opportunity line item
+                                        $opportunityLineItem[$i] = new stdclass();
+                                        $opportunityLineItem[$i]->PricebookEntryId = $orderItem[$i]->PricebookEntryId;
+                                        $opportunityLineItem[$i]->OpportunityId = $opportunityDetails->id;
+                                        $opportunityLineItem[$i]->Quantity = $orderItem[$i]->Quantity;
+                                        $opportunityLineItem[$i]->UnitPrice = $orderItem[$i]->UnitPrice;
+                                    }
+
+                                }
+                                $orderItemRes = Sfdc::createOrderItem($sfdcCredentials, $orderItem);
+                                $opportunityItemRes = Sfdc::addProductToOpportunity($sfdcCredentials, $opportunityLineItem);
+
+                            } else {
+
+                                $AccountHead = 'CUSTOMER';
+                                $st = 'YES';
+                                SaveErrorDetails($subscriptionId, $AccountHead, 'Error adding Customer: ' . $accountName);
+                                $flag = FALSE;
+                            }
+
+                        }
+                    }//end or order list
+                }
+            }
+        }
+    } catch (Exception $e) {
+        $msg = $e;
+        $flag = FALSE;
+    }
+    // Create reports.
+
+    $status = 'YES';
+    $totalTransaction = $flagCustomer + $flagProduct + $flagOrder;
+    $userDataArrTransaction = array(
+        'user_id' => $credentials['userId'],
+        'crm_type' => $crmType,
+        'no_customer_data' => $flagCustomer,
+        'no_product_data' => $flagProduct,
+        'no_order_data' => $flagOrder,
+        'last_sync_time' => time(),
+        'total_transaction' => $totalTransaction,
+        'status' => $status,
+        'added_on' => time()
+    );
+    $credentials['counterOrders'] = $flagOrder;
+    $credentials['counterProducts'] = $flagProduct;
+    $credentials['counterAccounts'] = $flagCustomer;
+    include "/var/www/html/app/mysql/mysqlconstants.php";
+
+    tblTransectionDetail($credentials, $crmType, $userDataArrTransaction);
+
+    sendSyncReport($credentials, $crmType);
+    return $flagOrder;
+}
 
 // Reporting Function For Sync........
 function sendSyncReport($credentials, $crmType)

@@ -12,7 +12,7 @@ if(!isset($_REQUEST['code'])) {
 
     $_SESSION['state'] = $randomNum;
     /*Send The User For install the app */
-    header("Location: https://" . $shop . "/admin/oauth/authorize?client_id=" . SHOPIFY_CLIENT_ID . "&scope=read_products,write_products,read_product_listings,read_collection_listings,read_customers,write_customers,read_orders,write_orders&redirect_uri=https://www.showmeademo.com/shopify-app/install/index.php&state=" . $randomNum . "&grant_options[]=per-user");
+    header("Location: https://" . $shop . "/admin/oauth/authorize?client_id=" . SHOPIFY_CLIENT_ID . "&scope=read_products,write_products,read_product_listings,read_collection_listings,read_customers,write_customers,read_orders,write_orders&redirect_uri=https://www.showmeademo.com/shopify-app/install/index.php&state=" . $randomNum . "&grant_options[]=");
 }
 else{
      $state = trim($_REQUEST['state']);
@@ -54,33 +54,23 @@ else{
                 $userInfoJson = json_decode($return, TRUE);
                 $u_access_token = $userInfoJson['access_token'];
                 $u_scope = $userInfoJson['scope'];
-                $u_user_id = $userInfoJson['associated_user']['id'];
-                $u_user_username = $userInfoJson['associated_user']['first_name'] . " ". $userInfoJson['associated_user']['last_name'];
-                $u_user_email = $userInfoJson['associated_user']['email'];
 
-               /* $userDataArr = array(
-                   'access_token' => $u_access_token,
-                   'scope' => $u_scope,
-                   'user_id' => $u_user_id,
-                   'user_name' => $u_user_username,
-                   'user_email' => $u_user_email,
-                   'context' => $u_user_context,
-                   'crm_type' => NULL,
-                   'zoho_auth_id' => NULL,
-                   'user_type' => 'FALSE',
-                   'sfdc_user_name' => NULL,
-                   'sfdc_password' => NULL,
-                   'sfdc_security_password' => NULL,
-                   'zoho_subscription_id' => NULL,
-                   'zoho_cust_id' => NULL,
-                   'zoho_cust_disp_name' => NULL,
-                   'zoho_cust_email' => NULL,
-                   'current_status' => 'INITIALIZE',
-                   'account_type' => 'new',
-                   'creation_time' => time()
+               $insertArr = array(
+                   'user_id' => "",
+                   'app1' => "SHOPIFY",
+                   'app1_cred1' => $u_access_token,
+                   'app1_cred2' => $shop
                );
+
+               $cond=" AND app1_cred1='$u_access_token'";
+                $count_row = count_row($userSubscription,$cond);
+                if($count_row == 0) {
+                    $insertSubscription = insert($userSubscription, $insertArr);
+                    $insertSubscriptionFinal = insert($userSubscriptionFinal, $insertArr);
+                }
+               /*
                $insertDataId = insert($userTable, $userDataArr); */
-               header("Location:crm-type.php?access_id=$u_user_id");
+               //header("Location:crm-type.php?access_id=$u_user_id");
            } catch (Exception $ex) {
                echo 'Error :' . $ex;
            }

@@ -38,8 +38,9 @@ define("FACEBOOK_APP_ID","1981488278775998");
 define("GOOGLE_CLIENT_ID","1050168007955-i3e3hiona6udrpn8cgm07t2qr9gdcgdq.apps.googleusercontent.com");
 /* Google Recaptcha Client Id */
 define("GOOGLE_RECAPTCHA_ID","6LeBxzAUAAAAAOwFq1IwxVWN3xzbynUi3Q0Yf4Ae");
-/* Shopify OAuth 2.0 Credential
-define("SHOPIFY_APPNAME","Aquaapi LLC");
-define("SHOPIFY_CLIENT_ID", "d621176b5fec90ef239ba82ed98a4797");
-define("SHOPIFY_CLIENT_SECRET", "7147d39f111dc833dc87a98c818ff733");
- */
+
+//Shopify App Credential
+define("SHOPIFY_APPNAME","Aquaapi CRM Connector");
+define("SHOPIFY_CLIENT_ID", "198609d73e73ee212386d0300a02bce2");
+define("SHOPIFY_CLIENT_SECRET", "ba10d72a138038c2d742e128544c250d");
+
