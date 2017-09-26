@@ -336,7 +336,8 @@ if (isset($_SESSION['user_id'])) {
 </div>
 <div class="footer">
     <p>Copyright (c) 2016-2017 aquaAPI LLC</p>
-    <a target="_blank" href="http://aquaapi.io/termsofservice.html">Terms And Conditions</a> | <a target="_blank">Privacy
+    <a target="_blank" href="http://aquaapi.io/termsofservice.html">Terms And Conditions</a> | <a target="_blank"
+                                                                                                  href="http://aquaapi.io/privacy.html">Privacy
         Policy</a> | <a target="_blank" href="http://aquaapi.com/contact.html">Contact Us</a>
 </div>
 <script>
