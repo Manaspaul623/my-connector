@@ -421,7 +421,7 @@ foreach ($subscriptions as $key=>$value)
                 $credentials['app1Details'] = $app1Credentials;
                 $credentials['app2Details'] = $app2Credentials;
 
-                shopifyappToSfdcCRM($credentials);
+               echo shopifyappToSfdcCRM($credentials);
 
             }break; //Done
             default :

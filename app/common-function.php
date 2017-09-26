@@ -8397,25 +8397,21 @@ function shopifyappToSfdcCRM($credentials)
     try {
         //............ORDER LIST COLLECTIONG.................
 
-        $orderUrl = $shopifyURL . "/admin/orders.json?created_at_min=" . $min_date_created . "&created_at_max=" . $max_date_created . "&direction=asc";
-        $http_headres = array(
+        $orderUrl = "https://".$shopifyURL . "/admin/orders.json?created_at_min=" . $min_date_created . "&created_at_max=" . $max_date_created . "&direction=asc";
+        $http_headers = array(
             "X-Shopify-Access-Token: ".trim($shopifyToken)
         );
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $orderUrl);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headres);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
         $return = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         if ($http_code === 200) {
             $orders = json_decode($return, TRUE);
             $count = count($orders);
-
-            print_r($orders);
-            exit(1);
-
             if ($count > 0) {
 
                 foreach ($orders as $num => $getOrders) {
@@ -8757,11 +8753,12 @@ function shopifyappToSfdcCRM($credentials)
 
                                         //Product Detail Collect
 
-                                        $productUrl = $shopifyURL . "/admin/products/" . $productId . ".json";
+                                        $productUrl = "https://".$shopifyURL . "/admin/products/" . $productId . ".json";
                                         $ch = curl_init();
                                         curl_setopt($ch, CURLOPT_URL, $orderUrl);
                                         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
                                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                                        curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
                                         $return = curl_exec($ch);
                                         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                                         curl_close($ch);
