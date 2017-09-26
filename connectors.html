@@ -75,6 +75,26 @@
           font-size: large;
 
       }
+        .button1 {
+            background-color: transparent;
+            color: white;
+            border-radius: 30px;
+            border: 1px solid;
+            padding: 9px 17px 9px 18px;
+            margin: 8px;
+            margin-right: 68px;
+        }
+
+        .button1:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+        @media only screen and (max-device-width: 480px) {
+            .button1 {
+                margin: auto;
+                margin-right: 40px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -83,6 +103,7 @@
         <header class="sub_header row">
             <div class="small-5 medium-4 columns">
                 <a class="logo" href="index.html"><img src="images/logo-sml.png"/></a>
+                <a class="button button1" href="app/install/login.php">Login</a>
             </div>
             <div class="small-7 medium-8 columns text-right">
                 <span class="title"><a href="connectors.html">eCommerce Platform Cloud Connector</a></span>
