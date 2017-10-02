@@ -21,7 +21,73 @@
                 <hr>
 
                 <div id="planContainer" class="plan-wrp">
-                    <div class="loader"></div>
+                    <div class="plan">
+                        <div class="pln-bx">
+                            <span class="span-name">Lite</span>
+                            <div class="pricewrp">
+                                <span class="price"><span>$</span>10<span>/months</span></span>
+                            </div>
+                            <ul>
+                                <li>Daily sync at your set time.</li>
+                                <li>Sync all your products.</li>
+                                <li>Up to 500 orders processing per month.</li>
+                                <li>Sync related Accounts, Contacts & Products</li>
+                                <li>Email support included.</li>
+                            </ul>
+                            <a class="signup-btn" id="plan10" href="#">Sign
+                            up</a>
+                        </div>
+                    </div>
+                    <div class="plan">
+                        <div class="pln-bx">
+                            <span class="span-name">Plus</span>
+                            <div class="pricewrp">
+                                <span class="price"><span>$</span>15<span>/months</span></span>
+                            </div>
+                            <ul>
+                                <li>Daily sync at your set time.</li>
+                                <li>Sync all your products.</li>
+                                <li>Up to 1000 orders processing per month.</li>
+                                <li>Sync related Accounts, Contacts & Products</li>
+                                <li>Email support included.</li>
+                            </ul>
+                            <a class="signup-btn" id="plan15" href="#">Sign
+                                up</a>
+                        </div>
+                    </div>
+                    <div class="plan">
+                        <div class="pln-bx">
+                            <span class="span-name">Advanced</span>
+                            <div class="pricewrp">
+                                <span class="price"><span>$</span>20<span>/months</span></span>
+                            </div>
+                            <ul>
+                                <li>Daily sync at your set time.</li>
+                                <li>Sync all your products.</li>
+                                <li>Up to 2000 orders processing per month.</li>
+                                <li>Sync related Accounts, Contacts & Products</li>
+                                <li>Email support included.</li>
+                            </ul>
+                            <a class="signup-btn" id="plan20" href="#">Sign
+                                up</a>
+                        </div>
+                    </div>
+                    <div class="plan">
+                        <div class="pln-bx">
+                            <span class="span-name">Pro</span>
+                            <div class="pricewrp">
+                                <span class="price"><span>$</span>25<span>/months</span></span>
+                            </div>
+                            <ul>
+                                <li>Daily sync at your set time.</li>
+                                <li>Sync all your products.</li>
+                                <li>Up to 3000 orders processing per month.</li>
+                                <li>Sync related Accounts, Contacts & Products</li>
+                                <li>Email support included.</li>
+                            </ul>
+                            <a class="signup-btn" id="plan25" href="#">Sign up</a>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -44,6 +110,49 @@
                 <a target="_blank" href="http://aquaapi.com/termsofservice.html">Terms And Conditions</a> | <a target="_blank" href="http://aquaapi.com/privacy.html">Privacy Policy</a> | <a target="_blank" href="http://aquaapi.com/contact.html">Contact Us</a>
             </div>
         <script>
+               var access_id = "<?php echo $_GET['access_id']; ?>";
+               $('body').on('click', '#plan10', function (e) {
+                window.open('provide-information.php?plan_code=10&user_token='+access_id,'Plan Confirmation');
+               });
+
+               $('#plan15').click(function () {
+                   window.open('provide-information.php?plan_code=15&user_token='+access_id,'Plan Confirmation');
+
+               });
+
+               $('#plan20').click(function () {
+                   window.open('provide-information.php?plan_code=20&user_token='+access_id,'Plan Confirmation');
+
+               });
+
+               $('#plan25').click(function () {
+                   window.open('provide-information.php?plan_code=25&user_token='+access_id,'Plan Confirmation');
+
+               });
+
+
+            function GetCharge(charge, status) {  //After Collecting The Charge Operation from provide-information.php page, charge id and status will come here
+                if(status === 'accepted') {
+                    swal({
+                        title: "Successful",
+                        text: "Your have successfully confirmed your subscription",
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonText: "Yes, proceed next!",
+                        showLoaderOnConfirm: true,
+                        closeOnConfirm: false
+                    }, function () {
+                        window.location = "user-dashboard?access_id="+access_id;
+                    });
+                }
+                else
+                {
+                    swal("Oops...", "You have Canceled the Order", "error");
+                }
+
+            }
+
+           /*
             $(document).ready(function () {
                 loadPlans();
             });
@@ -82,7 +191,7 @@
                 }).fail(function (jqXHR, textStatus) {
                     swal("Oops...", "Something wrong here!", "error");
                 });
-            }
+            } */
         </script>
     </body>
 </html>
