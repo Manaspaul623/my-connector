@@ -34,10 +34,9 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
             'recurring_application_charge' => array(
                 "name" => "Lite",
                 "price" => 10,
-                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
+                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$10 for 500 orders",
                 "capped_amount" => 10,
-                "trial_days" => 14,
                 "test" => true
             )
         );
@@ -77,10 +76,9 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
             'recurring_application_charge' => array(
                 "name" => "Plus",
                 "price" => 15,
-                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
+                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$15 for 1000 orders",
                 "capped_amount" => 15,
-                "trial_days" => 14,
                 "test" => true
             )
         );
@@ -120,10 +118,9 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
             'recurring_application_charge' => array(
                 "name" => "Advanced",
                 "price" => 20,
-                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
+                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$20 for 2000 orders",
                 "capped_amount" => 20,
-                "trial_days" => 14,
                 "test" => true
             )
         );
@@ -163,10 +160,9 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
             'recurring_application_charge' => array(
                 "name" => "Advanced",
                 "price" => 25,
-                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
+                "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$25 for 3000 orders",
                 "capped_amount" => 25,
-                "trial_days" => 14,
                 "test" => true
             )
         );
@@ -206,7 +202,7 @@ else if(isset($_REQUEST['charge_id']))
 
     $shop = $_SESSION['shop'];
     $shop_token = $_SESSION['shop_token'];
-    /* Collecting Access Token After Successfully Install*/
+    /* Collecting Charge Detail After Successfully */
     $tokenUrl = "https://" . $shop . "/admin/recurring_application_charges/".$charge_id.".json";
     $http_headers = array(
         "X-Shopify-Access-Token: " . trim($shop_token),
@@ -229,11 +225,39 @@ else if(isset($_REQUEST['charge_id']))
     $statusChecking = 0;
 
      //Here we will use our Database to Insert all the subscription details of Customer
-     if($paymentStatus == "accepted")
-     {
-         //For Payment Status is Accepted then we will activate the Subscription
-         //
-         $tokenUrl = "https://" . $shop . "/admin/recurring_application_charges/".$charge_id."/activate.json";
+     if($paymentStatus == "accepted") {
+         //Deactivate previously activated plan
+         $cond = " AND app1_cred1='$shop_token' AND app1_cred2='$shop'";
+         $checkPrePlan = fetch($userSubscription, $cond);
+         $prePlan = $checkPrePlan[0]['subscription_id'];
+        $http_code = "";
+         if($prePlan != "")
+         {
+             /* Deleting previous Plan */
+             $tokenUrl = "https://" . $shop . "/admin/recurring_application_charges/" . $prePlan . ".json";
+             $http_headers = array(
+                 "X-Shopify-Access-Token: " . trim($shop_token),
+                 "Content-Type: application/json"
+             );
+
+             $ch = curl_init();
+             curl_setopt($ch, CURLOPT_URL, $tokenUrl);
+             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+             curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
+             $return = curl_exec($ch);
+             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+             curl_close($ch);
+         }
+        else{
+            $http_code = 200;
+        }
+
+         if ($http_code == 200)
+         {
+             //For Payment Status is Accepted then we will activate the Subscription
+             $tokenUrl = "https://" . $shop . "/admin/recurring_application_charges/" . $charge_id . "/activate.json";
          $http_headers = array(
              "X-Shopify-Access-Token: " . trim($shop_token),
              "Content-Type: application/json"
@@ -243,9 +267,9 @@ else if(isset($_REQUEST['charge_id']))
                  "name" => $return_data['recurring_application_charge']['name'],
                  "price" => $return_data['recurring_application_charge']['price'],
                  "api_client_id" => $return_data['recurring_application_charge']['api_client_id'],
-                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
+                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                  "capped_amount" => $return_data['recurring_application_charge']['price'],
-                 "trial_days" => 14
+                 "trial_days" => 0
              )
          );
          $fields = json_encode($post_fileds);
@@ -253,70 +277,74 @@ else if(isset($_REQUEST['charge_id']))
          curl_setopt($ch, CURLOPT_URL, $tokenUrl);
          curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
          curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-         curl_setopt($ch, CURLOPT_POST,1);
+         curl_setopt($ch, CURLOPT_POST, 1);
          curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
          curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 
          $return = curl_exec($ch);
          $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
          curl_close($ch);
-         if($http_code == 200)
-         { //Subscription Activated now will insert to out DB
+         if ($http_code == 200) { //Subscription Activated now will insert to out DB
 
              //Update to our Subscription and Subscription Final Table
              $cond = " AND app1_cred1='$shop_token' AND app1_cred2='$shop'";
              $updateArr = array(
                  'subscription_id' => $charge_id,
-                 'plan' => $return_data['recurring_application_charge']['price'] ." [ ". $return_data['recurring_application_charge']['name']. " ] ",
+                 'plan' => $return_data['recurring_application_charge']['price'] . " [ " . $return_data['recurring_application_charge']['name'] . " ] ",
                  'current_status' => 1
              );
-            $upSubscription = update($userSubscription,$updateArr,$cond);
+             $upSubscription = update($userSubscription, $updateArr, $cond);
 
-            if($upSubscription){
-                $fetchSubscription = fetch($userSubscription,$cond);
-                //insert into Subscription Final
-                $insertArr = array (
-                  'subscription_id' => $fetchSubscription[0]['subscription_id'],
-                   'user_id' => $fetchSubscription[0]['user_id'],
-                    'app1_cred1' => $fetchSubscription[0]['app1_cred1'],
-                    'app1_cred2' => $fetchSubscription[0]['app1_cred2'],
-                    'app1_cred3' => $fetchSubscription[0]['app1_cred3'],
-                    'app2_cred1' => $fetchSubscription[0]['app2_cred1'],
-                    'app2_cred2' => $fetchSubscription[0]['app2_cred2'],
-                    'app2_cred3' => $fetchSubscription[0]['app2_cred3'],
-                    'hub_order' => $fetchSubscription[0]['hub_order'],
-                    'function_name' => $fetchSubscription[0]['function_name'],
-                    'app1' => $fetchSubscription[0]['app1'],
-                    'app2' => $fetchSubscription[0]['app2'],
-                    'plan' => $fetchSubscription[0]['plan'],
-                    'current_status' => $fetchSubscription[0]['current_status']
-                );
-                $insertFinalSubscription = insert($userSubscriptionFinal,$insertArr);
+             //Subscription Exist or not checking in Final table.
+             $fetchSubscription = fetch($userSubscription,$cond);
+             $count_final = count_row($userSubscriptionFinal,$cond);
+             if($count_final == 0) //For new Subscription On a Canceled Subscription
+             {
+                 //insert into Subscription Final
+                 $insertArr = array (
+                     'subscription_id' => $fetchSubscription[0]['subscription_id'],
+                     'user_id' => $fetchSubscription[0]['user_id'],
+                     'app1_cred1' => $fetchSubscription[0]['app1_cred1'],
+                     'app1_cred2' => $fetchSubscription[0]['app1_cred2'],
+                     'app1_cred3' => $fetchSubscription[0]['app1_cred3'],
+                     'app2_cred1' => $fetchSubscription[0]['app2_cred1'],
+                     'app2_cred2' => $fetchSubscription[0]['app2_cred2'],
+                     'app2_cred3' => $fetchSubscription[0]['app2_cred3'],
+                     'hub_order' => $fetchSubscription[0]['hub_order'],
+                     'function_name' => $fetchSubscription[0]['function_name'],
+                     'app1' => $fetchSubscription[0]['app1'],
+                     'app2' => $fetchSubscription[0]['app2'],
+                     'plan' => $fetchSubscription[0]['plan'],
+                     'current_status' => $fetchSubscription[0]['current_status']
+                 );
+                 $upSubscriptionFinal = insert($userSubscriptionFinal,$insertArr);
+             }
+             else { //for a Active Subscription plan changed or upgrade
+                 //Update Final Subscription
+                 $upSubscriptionFinal = update($userSubscriptionFinal, $updateArr, $cond);
+             }
 
-                //update to user Login Table
-                $user_id = $fetchSubscription[0]['user_id'];
-                $con = " AND user_id ='$user_id'";
-                $updateAr = array (
-                  'billing_id' => $fetchSubscription[0]['subscription_id']
-                );
-                $upUser = update($userLogin,$updateAr,$con);
+             //update to user Login Table
+             $user_id = $fetchSubscription[0]['user_id'];
+             $con = " AND user_id ='$user_id'";
+             $updateAr = array(
+                 'billing_id' => $fetchSubscription[0]['subscription_id']
+             );
+             $upUser = update($userLogin,$updateAr,$con);
 
-                if(is_numeric($insertFinalSubscription)){
-                    $statusChecking = 1;
-                }
-                else{
-                    echo "not insert to Final Subscription table";
-                }
+             if ($upSubscription && $upUser) {
+                 $statusChecking = 1;
+             } else {
+                 echo 'Not updated to Subscription Table';
+             }
 
-            }
-            else {
-                echo 'Not updated to Subscription Table';
-            }
-
-         }
-         else {
+         } else {
              echo 'Subscription Not Activated';
              print_r($return);
+         }
+     }
+         else {
+             echo "pre plan Not Deactivated.";
          }
      }
      else {

@@ -1,3 +1,5 @@
+
+
 <?php
 include "$_SERVER[DOCUMENT_ROOT]/shopify-app/mysql/mysqlconstants.php";      /* including db related files */
 include "$_SERVER[DOCUMENT_ROOT]/shopify-app/mysql/mysqllib.php";
@@ -59,7 +61,7 @@ if(isset($_REQUEST['code'])){  //For First time Access_token Collection if Code 
                 if($count_row == 0) {
                     //$insertSubscriptionFinal = insert($userSubscriptionFinal, $insertArr);
 
-                    /* Collecting Access Token After Successfully Install*/
+                    /* Collecting Shop Details After Successfully Install*/
                     $tokenUrl = "https://" . $shop . "/admin/shop.json";
                     $http_headers = array(
                         "X-Shopify-Access-Token: " . trim($u_access_token)
@@ -74,11 +76,12 @@ if(isset($_REQUEST['code'])){  //For First time Access_token Collection if Code 
                     curl_close($ch);
                     $shop_data = json_decode($return, TRUE); //Shop Data Collect
                     $shop_email = $shop_data['shop']['email'];
+                    $shop_name = $shop_data['shop']['name'];
                     $insertUser = "";
 
-                    $user_cond = " AND user_email='$shop_email'";
-                    $count_user =$count_row($userLogin,$user_cond);
-                    if($count_user == 0) {         //Email Already Exist or Not in our record checking
+                    $user_cond = " AND user_email='$shop_email' AND user_name='$shop_name'";
+                    $count_user = count_row($userLogin,$user_cond);
+                    if($count_user == 0) { //Email Already Exist or Not in our record checking
                         //For User Table Insert
                         $user_arr = array(
                             'user_name' => $shop_data['shop']['name'],
@@ -86,9 +89,8 @@ if(isset($_REQUEST['code'])){  //For First time Access_token Collection if Code 
                             'account_name' => $shop_data['shop']['name']
                         );
                         $insertUser = insert($userLogin, $user_arr);
-                    }
-                    //For Subscription Table
-                    if(is_numeric($insertUser)) {
+
+                        //For Subscription Table
                         $insertArr = array(
                             'user_id' => $insertUser,
                             'app1' => "SHOPIFY",
@@ -97,23 +99,67 @@ if(isset($_REQUEST['code'])){  //For First time Access_token Collection if Code 
                         );
                         $insertSubscription = insert($userSubscription, $insertArr);
 
-                        //redirect For Crm Chosen
-                        header("Location:crm-type.php?access_id=$insertUser");
+                        //After all Create and insert into database Now we will create  a uninstall Webhook For Future uninstall  of The App
+                        /***** And it is Very Important ************/
+
+                        /* Creating A uninstall Webhook*/
+                        $tokenUrl = "https://" . $shop . "/admin/webhooks.json";
+                        $http_headers = array(
+                            "X-Shopify-Access-Token: " . trim($u_access_token),
+                            "Content-Type: application/json"
+                        );
+                        $client_ar = array (
+                            "webhook" => array (
+                            "topic" => "app/uninstalled",
+                            "address" => "https://" . APP_DOMAIN . "/shopify-app/install/uninstall.php",
+                            "format" => "json"
+                            )
+                        );
+
+                        $json_uninstall = json_encode($client_ar);
+
+
+                        $ch = curl_init();
+                        curl_setopt($ch, CURLOPT_URL, $tokenUrl);
+                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_uninstall);
+                        $return = curl_exec($ch);
+                        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                        curl_close($ch);
+                        if($http_code == 201) {
+                            header("Location:https://" . $shop . "/admin/apps"); // For Linking First Time App install
+                        }
+                        else{
+                            echo 'UnInstall Webhook not Created';
+                            print_r($return);
+                        }
                     }
                     else{
-                        echo "User Not Inserted";
+                        $fetch_user = fetch($userLogin,$user_cond);
+                        $insertUser = $fetch_user[0]['user_id'];
+                        header("Location:crm-type.php?access_id=$insertUser"); // After linking Every time when user click on app link
                     }
+
+
+
                     /*
                     $insertDataId = insert($userTable, $userDataArr); */
                     //
                 }
-                else{
+                else
+                    {
                     $fetch_subscription = fetch($userSubscription,$cond);
                     $subscription=$fetch_subscription[0]['subscription_id'];
-                    if(empty($subscription)){
+                    $app2 = $fetch_subscription[0]['app2'];
+                    if(empty($subscription) && empty($app2)){    //  only User and Shopify Details exist but no subscription or Second app Not Exist then will send to chose Second App
                         $user = $fetch_subscription[0]['user_id'];
-                        header("Location:crm-type.php?access_id=$user"); }
-                    else{
+                        header("Location:crm-type.php?access_id=$user");
+                    }
+                    else{ //Subscription Previously Created with second app but in InActive State
                         $user = $fetch_subscription[0]['user_id'];
                         header("Location:../subscription/user-dashboard?access_id=".$user);
                     }
@@ -133,4 +179,4 @@ else{
     $_SESSION['state'] = $randomNum;
     /*Send The User For install the app */
     header("Location: https://" . $shop . "/admin/oauth/authorize?client_id=" . SHOPIFY_CLIENT_ID . "&scope=read_products,read_product_listings,read_collection_listings,read_customers,read_orders&redirect_uri=https://" . APP_DOMAIN . "/shopify-app/install/index.php&state=" . $randomNum . "&grant_options[]=");
-}
+} ?>

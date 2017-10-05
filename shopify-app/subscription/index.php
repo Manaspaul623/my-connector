@@ -21,8 +21,6 @@ function dispatcher($type) {
             break;
         case 'getCustomer' : getCustomer();
             break;
-        case 'updateCustomer' : updateCustomer();
-            break;
         case 'getSubscription' : getSubscription();
             break;
         case 'getTimeSlot' : getTimeSlot();
@@ -35,7 +33,7 @@ function dispatcher($type) {
             break;
         case 'updateSyncTime' : updateSyncTime();
             break;
-        case 'reactivateApp' : reactivateApp();
+        case 'cancelPermanently' : cancelPermanently();
             break;
         case 'supportSubmit' : supportSubmit();
             break;
@@ -182,99 +180,116 @@ function updateCard() {
 
 function cancelSubscription() {
     // include 'config.php';
-    $zoho_subscription_id = trim($_REQUEST['zoho_subscription_id']);
-    $url = SUBSCRIPTION_URL. '/subscriptions/' . $zoho_subscription_id . '/cancel?cancel_at_end=true';
+    $subscription_id = trim($_REQUEST['subscription_id']);
 
-    $headers = array(
-        "Content-Type: application/json;charset=UTF-8 ",
-        "authorization: Zoho-authtoken " . SUBSCRIPTION_AUTHORIZATION_CODE,
-        "cache-control: no-cache",
-        "x-com-zoho-subscriptions-organizationid: " . ORGANIZATION_ID
+    $shop = $_SESSION['shop'];
+    $shop_token = $_SESSION['shop_token'];
+    $user = $_SESSION['userId'];
+    //* Collecting Access Token After Successfully Install*/
+    $tokenUrl = "https://" . $shop . "/admin/recurring_application_charges/".$subscription_id.".json";
+    $http_headers = array(
+        "X-Shopify-Access-Token: " . trim($shop_token),
+        "Content-Type: application/json"
     );
-    $data_arr = array();
-    $data_string = json_encode($data_arr);
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_URL, $tokenUrl);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
     $return = curl_exec($ch);
-    $res = json_decode($return, TRUE);
-    if ($res['code'] === 0) {
-        include "$_SERVER[DOCUMENT_ROOT]/bigcommerce-app-management/mysql/mysqlconstants.php";      /* including db related files */
-        include "$_SERVER[DOCUMENT_ROOT]/bigcommerce-app-management/mysql/mysqllib.php";
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($http_code == 200) {
+        include "$_SERVER[DOCUMENT_ROOT]/shopify-app/mysql/mysqlconstants.php";      /* including db related files */
+        include "$_SERVER[DOCUMENT_ROOT]/shopify-app/mysql/mysqllib.php";
 
-        $user_token = $_REQUEST['logged_user_id'];
+
         $updateArr = array(
-            'current_status' => 'CANCELLED'
+            'subscription_id' => "",
+            'plan' => "",
+            'current_status' => 0
         );
-        $cond = " AND user_id=$user_token";
-        $re = update($userTable, $updateArr, $cond);
-        $_SESSION['userCurrentStatus'] = 'CANCELLED';
+        $cond = " AND user_id=$user";
+
+        $re = update($userSubscription, $updateArr, $cond); // Status changed to Deactivate
+        $reFinal = delete($userSubscriptionFinal,$cond);
+        if($reFinal>0)
+        {
+            echo '1';
+        }
+        else {
+            echo '0';
+        }
     }
-    echo $return;
+    else{
+        echo '2';
+    }
+
 }
 
-function reactivateApp() {
+function cancelPermanently() {
     // include 'config.php';
-    $zoho_subscription_id = trim($_REQUEST['zoho_subscription_id']);
-    $url = SUBSCRIPTION_URL . '/subscriptions/' . $zoho_subscription_id . '/reactivate';
+    $user_token = trim($_REQUEST['user_id']);
 
-    $headers = array(
-        "Content-Type: application/json;charset=UTF-8 ",
-        "authorization: Zoho-authtoken " . SUBSCRIPTION_AUTHORIZATION_CODE,
-        "cache-control: no-cache",
-        "x-com-zoho-subscriptions-organizationid: " . ORGANIZATION_ID
-    );
-    $data_arr = array();
-    $data_string = json_encode($data_arr);
+        include "$_SERVER[DOCUMENT_ROOT]/shopify-app/mysql/mysqlconstants.php";      /* including db related files */
+        include "$_SERVER[DOCUMENT_ROOT]/shopify-app/mysql/mysqllib.php";
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-    $return = curl_exec($ch);
-    $res = json_decode($return, TRUE);
-    if ($res['code'] === 0) {
-        include "$_SERVER[DOCUMENT_ROOT]/bigcommerce-app-management/mysql/mysqlconstants.php";      /* including db related files */
-        include "$_SERVER[DOCUMENT_ROOT]/bigcommerce-app-management/mysql/mysqllib.php";
-
-        $user_token = $_REQUEST['logged_user_id'];
         $updateArr = array(
-            'current_status' => 'SYNCINTERVAL'
+            'subscription_id' => "",
+            'app2_cred1' => "",
+            'app2_cred2' => "",
+            'app2_cred3' => "",
+            'function_name' => "",
+            'app2' => "",
+            'plan' => "",
+            'current_status' => 0
         );
         $cond = " AND user_id=$user_token";
-        $re = update($userTable, $updateArr, $cond);
-        $_SESSION['userCurrentStatus'] = 'SYNCINTERVAL';
-    }
-    echo $return;
+        $re = update($userSubscription, $updateArr, $cond);
+
+        //Update Billing Id To Null in user Login table.
+
+        $userUpdate = array(
+            'billing_id' => ""
+        );
+        $billing = update($userLogin,$userUpdate,$cond);
+        if($re>0)
+        {
+            unset($_SESSION['currentStatus']);
+            unset($_SESSION['crmType']);
+
+            echo '1';
+        }
+        else {
+            echo '0';
+        }
+
 }
 
 function getSubscription() {
-    $zoho_subscription_id = $_REQUEST['zoho_subscription_id'];
-//    include 'config.php';
-    $url = SUBSCRIPTION_URL . '/subscriptions/' . $zoho_subscription_id;
-//    error_log("Subscription:".$zoho_subscription_id.$url, 1, "debashishp@gmail.com");
-
-    $headers = array(
-        "authorization: Zoho-authtoken " . SUBSCRIPTION_AUTHORIZATION_CODE,
-        "cache-control: no-cache",
-        "x-com-zoho-subscriptions-organizationid: " . ORGANIZATION_ID
+    $shop = $_SESSION['shop'];
+    $shop_token = $_SESSION['shop_token'];
+     $charge_id = $_REQUEST['subscription_id'];
+    //* Collecting Access Token After Successfully Install*/
+    $tokenUrl = "https://" . $shop . "/admin/recurring_application_charges/".$charge_id.".json";
+    $http_headers = array(
+        "X-Shopify-Access-Token: " . trim($shop_token),
+        "Content-Type: application/json"
     );
+
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_URL, $tokenUrl);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $http_headers);
+
     $return = curl_exec($ch);
+    curl_close($ch);
+
     echo $return;
+
 }
 
 function getCustomer() {

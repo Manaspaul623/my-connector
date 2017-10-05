@@ -301,6 +301,15 @@ a.cancel-btn:hover{
 	display:inline-block;
 	float:left;
 }
+
+.non_selected_crm{
+	margin: 40px 0 60px;
+	background: url(../../images/crossmarg.png) 0 0 no-repeat;
+	padding-left: 55px;
+	line-height: 40px;
+	display:inline-block;
+	float:left;
+}
 .crm_img{
 	display:inline-block;
 	float:left;
