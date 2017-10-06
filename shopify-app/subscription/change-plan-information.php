@@ -36,8 +36,7 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
                 "price" => 10,
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$10 for 500 orders",
-                "capped_amount" => 10,
-                "test" => true
+                "capped_amount" => 10
             )
         );
         $fields = json_encode($post_fields);
@@ -78,8 +77,7 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
                 "price" => 15,
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$15 for 1000 orders",
-                "capped_amount" => 15,
-                "test" => true
+                "capped_amount" => 15
             )
         );
         $fields = json_encode($post_fields);
@@ -120,8 +118,7 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
                 "price" => 20,
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$20 for 2000 orders",
-                "capped_amount" => 20,
-                "test" => true
+                "capped_amount" => 20
             )
         );
         $fields = json_encode($post_fields);
@@ -162,8 +159,7 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
                 "price" => 25,
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/change-plan-information.php",
                 "terms" => "$25 for 3000 orders",
-                "capped_amount" => 25,
-                "test" => true
+                "capped_amount" => 25
             )
         );
         $fields = json_encode($post_fields);

@@ -4,13 +4,12 @@ include "$_SERVER[DOCUMENT_ROOT]/shopify-app/mysql/mysqllib.php";
 //include_once("$_SERVER[DOCUMENT_ROOT]/shopify-app/analyticstracking.php");
 include_once("$_SERVER[DOCUMENT_ROOT]/appconstants.php");
 session_start();
-if(isset($_SESSION['userId'])){
-    $user_id = $_SESSION['userId'];
-}
-else {
+if(isset($_REQUEST['access_id'])){
     $user_id = $_REQUEST['access_id'];
 }
-
+else {
+    $user_id = $_SESSION['userId'];
+}
 
 $cond =" AND user_id='$user_id'";
 $fetchUser = fetch($userLogin,$cond);

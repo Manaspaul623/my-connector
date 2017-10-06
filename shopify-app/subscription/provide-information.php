@@ -37,8 +37,7 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
                 "terms" => "$10 for 500 orders",
                 "capped_amount" => 10,
-                "trial_days" => 14,
-                "test" => true
+                "trial_days" => 14
             )
         );
         $fields = json_encode($post_fields);
@@ -80,8 +79,7 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
                 "terms" => "$15 for 1000 orders",
                 "capped_amount" => 15,
-                "trial_days" => 14,
-                "test" => true
+                "trial_days" => 14
             )
         );
         $fields = json_encode($post_fields);
@@ -123,8 +121,7 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
                 "terms" => "$20 for 2000 orders",
                 "capped_amount" => 20,
-                "trial_days" => 14,
-                "test" => true
+                "trial_days" => 14
             )
         );
         $fields = json_encode($post_fields);
@@ -161,13 +158,12 @@ if (isset($_REQUEST['plan_code']) && isset($_REQUEST['user_token']))
         );
         $post_fields = array(
             'recurring_application_charge' => array(
-                "name" => "Advanced",
+                "name" => "Pro",
                 "price" => 25,
                 "return_url" => "https://" . APP_DOMAIN . "/shopify-app/subscription/provide-information.php",
                 "terms" => "$25 for 3000 orders",
                 "capped_amount" => 25,
-                "trial_days" => 14,
-                "test" => true
+                "trial_days" => 14
             )
         );
         $fields = json_encode($post_fields);
