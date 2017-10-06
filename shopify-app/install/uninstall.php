@@ -35,6 +35,7 @@ if($method == 'POST') {
         unset($_SESSION['currentStatus']);
         unset($_SESSION['userName']);
         unset($_SESSION['crmType']);
+        unset($_SESSION['userEmail']);
     }
 }
 ?>

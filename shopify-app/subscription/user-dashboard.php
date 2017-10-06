@@ -34,7 +34,9 @@ $_SESSION['currentStatus'] = $currentStatus;
 //Storing Crm type to Globla
 $_SESSION['crmType'] = $crmType;
 
-$_SESSION['userName'] = $fetchUser[0]['user_name'];;
+$_SESSION['userName'] = $fetchUser[0]['user_name'];
+$_SESSION['userEmail'] = $fetchUser[0]['user_email'];
+
 ?>
 
 <!DOCTYPE HTML>
